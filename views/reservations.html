@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Reservas - Serenity Spa</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-spa"></i>
+                <a href="/"><span>Serenity Spa</span></a>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link">Inicio</a></li>
+                <li><a href="/services" class="nav-link">Servicios</a></li>
+                <li><a href="/reservations" class="nav-link active">Reservas</a></li>
+                <li><a href="/profile" class="nav-link" id="profileLink" style="display: none;">Perfil</a></li>
+                <li><a href="/login" class="nav-link" id="loginLink">Iniciar Sesión</a></li>
+                <li><a href="#" class="nav-link" id="logoutLink" style="display: none;">Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="reservations-hero">
+        <div class="hero-content">
+            <h1>Mis Reservas</h1>
+            <p>Gestiona tus citas y servicios reservados</p>
+        </div>
+    </section>
+
+    <!-- Reservations Section -->
+    <section class="reservations-section">
+        <div class="container">
+            <div class="reservations-header">
+                <h2>Tus Próximas Citas</h2>
+                <a href="/services" class="btn-new-reservation">
+                    <i class="fas fa-plus"></i>
+                    Nueva Reserva
+                </a>
+            </div>
+
+            <div class="reservations-content" id="reservationsContent">
+                <!-- Las reservas se cargarán dinámicamente -->
+            </div>
+
+            <div class="no-reservations" id="noReservations" style="display: none;">
+                <div class="no-reservations-content">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No tienes reservas</h3>
+                    <p>¡Es hora de relajarte! Explora nuestros servicios y haz tu primera reserva.</p>
+                    <a href="/services" class="cta-button">
+                        <i class="fas fa-spa"></i>
+                        Explorar Servicios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Edit Reservation Modal -->
+    <div class="modal" id="editReservationModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Reserva</h3>
+                <button class="modal-close" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editReservationForm">
+                    <div class="form-group">
+                        <label for="editDate">
+                            <i class="fas fa-calendar"></i>
+                            Nueva Fecha
+                        </label>
+                        <input type="date" id="editDate" name="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTime">
+                            <i class="fas fa-clock"></i>
+                            Nuevo Horario
+                        </label>
+                        <select id="editTime" name="hora" required>
+                            <option value="">Selecciona un horario</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editNotes">
+                            <i class="fas fa-comment"></i>
+                            Notas adicionales
+                        </label>
+                        <textarea id="editNotes" name="notas" rows="3" placeholder="Alguna solicitud especial o comentario..."></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" onclick="closeEditModal()">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn-reserve">
+                            <i class="fas fa-save"></i>
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmationModal" style="display: none;">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h3 id="confirmationTitle">Confirmar Acción</h3>
+                <button class="modal-close" onclick="closeConfirmationModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage">¿Estás segura de que deseas realizar esta acción?</p>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeConfirmationModal()">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn-danger" id="confirmationButton">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spa fa-spin"></i>
+            <p>Cargando reservas...</p>
+        </div>
+    </div>
+
+    <!-- Alert Message -->
+    <div class="alert" id="alertMessage" style="display: none;">
+        <div class="alert-content">
+            <i class="alert-icon"></i>
+            <span class="alert-text"></span>
+            <button class="alert-close" onclick="hideAlert()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-spa"></i>
+                        <span>Serenity Spa</span>
+                    </div>
+                    <p>Tu oasis de tranquilidad y bienestar en el corazón de la ciudad.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/reservations.js"></script>
+</body>
+</html>

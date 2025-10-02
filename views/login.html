@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Serenity Spa</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-spa"></i>
+                <a href="/"><span>Serenity Spa</span></a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Inicio</a></li>
+                <li><a href="/services" class="nav-link">Servicios</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login Section -->
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-image">
+                <img src="/images/login-spa.jpg" alt="Spa ambiente">
+                <div class="auth-overlay">
+                    <h2>Bienvenida de vuelta</h2>
+                    <p>Continúa tu viaje de bienestar con nosotros</p>
+                </div>
+            </div>
+            
+            <div class="auth-form-container">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="switchTab('login')">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Iniciar Sesión
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('register')">
+                        <i class="fas fa-user-plus"></i>
+                        Registrarse
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <div class="auth-form" id="loginForm">
+                    <div class="form-header">
+                        <i class="fas fa-spa"></i>
+                        <h3>Iniciar Sesión</h3>
+                        <p>Accede a tu cuenta para reservar servicios</p>
+                    </div>
+                    
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label for="loginEmail">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input 
+                                type="email" 
+                                id="loginEmail" 
+                                name="email" 
+                                required 
+                                placeholder="tu@email.com"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">
+                                <i class="fas fa-lock"></i>
+                                Contraseña
+                            </label>
+                            <input 
+                                type="password" 
+                                id="loginPassword" 
+                                name="password" 
+                                required 
+                                placeholder="Tu contraseña"
+                            >
+                        </div>
+
+                        <button type="submit" class="auth-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Iniciar Sesión
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p>¿No tienes cuenta? <a href="#" onclick="switchTab('register')">Regístrate aquí</a></p>
+                    </div>
+                </div>
+
+                <!-- Register Form -->
+                <div class="auth-form" id="registerForm" style="display: none;">
+                    <div class="form-header">
+                        <i class="fas fa-spa"></i>
+                        <h3>Crear Cuenta</h3>
+                        <p>Únete a nuestra comunidad de bienestar</p>
+                    </div>
+                    
+                    <form id="registerFormElement">
+                        <div class="form-group">
+                            <label for="registerNombre">
+                                <i class="fas fa-user"></i>
+                                Nombre Completo
+                            </label>
+                            <input 
+                                type="text" 
+                                id="registerNombre" 
+                                name="nombre" 
+                                required 
+                                placeholder="Tu nombre completo"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerEmail">
+                                <i class="fas fa-envelope"></i>
+                                Email
+                            </label>
+                            <input 
+                                type="email" 
+                                id="registerEmail" 
+                                name="email" 
+                                required 
+                                placeholder="tu@email.com"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerTelefono">
+                                <i class="fas fa-phone"></i>
+                                Teléfono
+                            </label>
+                            <input 
+                                type="tel" 
+                                id="registerTelefono" 
+                                name="telefono" 
+                                required 
+                                placeholder="(899) 123-4567"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registerPassword">
+                                <i class="fas fa-lock"></i>
+                                Contraseña
+                            </label>
+                            <input 
+                                type="password" 
+                                id="registerPassword" 
+                                name="password" 
+                                required 
+                                placeholder="Mínimo 6 caracteres"
+                                minlength="6"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">
+                                <i class="fas fa-lock"></i>
+                                Confirmar Contraseña
+                            </label>
+                            <input 
+                                type="password" 
+                                id="confirmPassword" 
+                                name="confirmPassword" 
+                                required 
+                                placeholder="Confirma tu contraseña"
+                            >
+                        </div>
+
+                        <button type="submit" class="auth-btn">
+                            <i class="fas fa-user-plus"></i>
+                            Crear Cuenta
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p>¿Ya tienes cuenta? <a href="#" onclick="switchTab('login')">Inicia sesión aquí</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spa fa-spin"></i>
+            <p>Procesando...</p>
+        </div>
+    </div>
+
+    <!-- Alert Message -->
+    <div class="alert" id="alertMessage" style="display: none;">
+        <div class="alert-content">
+            <i class="alert-icon"></i>
+            <span class="alert-text"></span>
+            <button class="alert-close" onclick="hideAlert()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabs = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                tabs[0].classList.add('active');
+            } else {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                tabs[1].classList.add('active');
+            }
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alertMessage');
+            const alertText = alert.querySelector('.alert-text');
+            const alertIcon = alert.querySelector('.alert-icon');
+            
+            alertText.textContent = message;
+            alert.className = `alert alert-${type}`;
+            
+            if (type === 'success') {
+                alertIcon.className = 'alert-icon fas fa-check-circle';
+            } else {
+                alertIcon.className = 'alert-icon fas fa-exclamation-circle';
+            }
+            
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                hideAlert();
+            }, 5000);
+        }
+
+        function hideAlert() {
+            document.getElementById('alertMessage').style.display = 'none';
+        }
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

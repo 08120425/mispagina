@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Serenity Spa</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-spa"></i>
+                <a href="/"><span>Serenity Spa</span></a>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link">Inicio</a></li>
+                <li><a href="/services" class="nav-link">Servicios</a></li>
+                <li><a href="/reservations" class="nav-link">Reservas</a></li>
+                <li><a href="/profile" class="nav-link active" id="profileLink">Perfil</a></li>
+                <li><a href="#" class="nav-link" id="logoutLink">Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <section class="profile-section">
+        <div class="container">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-info">
+                    <h1 id="userName">Cargando...</h1>
+                    <p id="userEmail">usuario@email.com</p>
+                    <span class="profile-badge">
+                        <i class="fas fa-crown"></i>
+                        Cliente VIP
+                    </span>
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h3>
+                            <i class="fas fa-user"></i>
+                            Información Personal
+                        </h3>
+                        <button class="edit-btn" onclick="toggleEdit()">
+                            <i class="fas fa-edit"></i>
+                            Editar
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <form id="profileForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profileNombre">Nombre Completo</label>
+                                    <input type="text" id="profileNombre" name="nombre" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileTelefono">Teléfono</label>
+                                    <input type="tel" id="profileTelefono" name="telefono" readonly>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group full-width">
+                                    <label for="profileEmail">Email</label>
+                                    <input type="email" id="profileEmail" name="email" readonly>
+                                </div>
+                            </div>
+                            <div class="form-actions" id="formActions" style="display: none;">
+                                <button type="button" class="btn-secondary" onclick="cancelEdit()">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Guardar Cambios
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4 id="totalReservations">0</h4>
+                            <p>Reservas Totales</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4 id="nextAppointment">Ninguna</h4>
+                            <p>Próxima Cita</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h4 id="favoriteService">-</h4>
+                            <p>Servicio Favorito</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spa fa-spin"></i>
+            <p>Cargando perfil...</p>
+        </div>
+    </div>
+
+    <!-- Alert Message -->
+    <div class="alert" id="alertMessage" style="display: none;">
+        <div class="alert-content">
+            <i class="alert-icon"></i>
+            <span class="alert-text"></span>
+            <button class="alert-close" onclick="hideAlert()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        let isEditing = false;
+        let originalData = {};
+
+        async function loadProfile() {
+            try {
+                showLoading();
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const response = await fetch('/api/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    displayProfile(user);
+                    loadStats();
+                } else {
+                    throw new Error('Error al cargar el perfil');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error al cargar el perfil', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayProfile(user) {
+            document.getElementById('userName').textContent = user.nombre;
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('profileNombre').value = user.nombre;
+            document.getElementById('profileEmail').value = user.email;
+            document.getElementById('profileTelefono').value = user.telefono;
+            
+            originalData = {
+                nombre: user.nombre,
+                email: user.email,
+                telefono: user.telefono
+            };
+        }
+
+        async function loadStats() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/reservations/mis-reservas', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const reservations = await response.json();
+                    updateStats(reservations);
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
+
+        function updateStats(reservations) {
+            document.getElementById('totalReservations').textContent = reservations.length;
+            
+            // Próxima cita
+            const futureReservations = reservations.filter(r => 
+                new Date(r.fecha) >= new Date() && r.estado !== 'cancelada'
+            ).sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+            
+            if (futureReservations.length > 0) {
+                const next = futureReservations[0];
+                const fecha = new Date(next.fecha).toLocaleDateString();
+                document.getElementById('nextAppointment').textContent = `${fecha} ${next.hora}`;
+            }
+            
+            // Servicio favorito
+            if (reservations.length > 0) {
+                const serviceCounts = {};
+                reservations.forEach(r => {
+                    if (r.servicio && r.servicio.nombre) {
+                        serviceCounts[r.servicio.nombre] = (serviceCounts[r.servicio.nombre] || 0) + 1;
+                    }
+                });
+                
+                const favorite = Object.keys(serviceCounts).reduce((a, b) => 
+                    serviceCounts[a] > serviceCounts[b] ? a : b
+                );
+                document.getElementById('favoriteService').textContent = favorite;
+            }
+        }
+
+        function toggleEdit() {
+            isEditing = !isEditing;
+            const inputs = document.querySelectorAll('#profileForm input');
+            const formActions = document.getElementById('formActions');
+            const editBtn = document.querySelector('.edit-btn');
+            
+            inputs.forEach(input => {
+                input.readOnly = !isEditing;
+            });
+            
+            if (isEditing) {
+                formActions.style.display = 'flex';
+                editBtn.style.display = 'none';
+            } else {
+                formActions.style.display = 'none';
+                editBtn.style.display = 'block';
+            }
+        }
+
+        function cancelEdit() {
+            isEditing = false;
+            document.getElementById('profileNombre').value = originalData.nombre;
+            document.getElementById('profileEmail').value = originalData.email;
+            document.getElementById('profileTelefono').value = originalData.telefono;
+            toggleEdit();
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                showLoading();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    const updatedUser = await response.json();
+                    displayProfile(updatedUser);
+                    toggleEdit();
+                    showAlert('Perfil actualizado exitosamente', 'success');
+                } else {
+                    throw new Error('Error al actualizar el perfil');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error al actualizar el perfil', 'error');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.getElementById('alertMessage');
+            const alertText = alert.querySelector('.alert-text');
+            const alertIcon = alert.querySelector('.alert-icon');
+            
+            alertText.textContent = message;
+            alert.className = `alert alert-${type}`;
+            
+            if (type === 'success') {
+                alertIcon.className = 'alert-icon fas fa-check-circle';
+            } else {
+                alertIcon.className = 'alert-icon fas fa-exclamation-circle';
+            }
+            
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                hideAlert();
+            }, 5000);
+        }
+
+        function hideAlert() {
+            document.getElementById('alertMessage').style.display = 'none';
+        }
+
+        // Cargar perfil al cargar la página
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html>
